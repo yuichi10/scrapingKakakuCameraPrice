@@ -64,6 +64,13 @@ func getProductName(doc *goquery.Document) string {
 	return sjisToUtf8(doc.Find("h2").Text())
 }
 
+// 発売日の取得
+func getReleaseDate(doc *goquery.Document) string {
+	value := sjisToUtf8(doc.Find("#subInfoRow2 li").Text())
+	values := strings.Split(value, "：")
+	return values[len(values)-1]
+}
+
 // プロダクトの必要情報を取得
 func getEachProductInfos(url string) {
 	pinfo := new(product.PInfo)
@@ -73,6 +80,7 @@ func getEachProductInfos(url string) {
 	}
 	pinfo.Maker = getMaker(doc)
 	pinfo.Name = getProductName(doc)
+	pinfo.ReleaseDate = getReleaseDate(doc)
 }
 
 // 商品詳細へのリンクを取得
