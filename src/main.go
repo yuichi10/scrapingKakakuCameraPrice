@@ -49,6 +49,7 @@ func initDB() {
 	db.AutoMigrate(&product.DslrCamera{})
 	db.AutoMigrate(&product.Lens{})
 	db.AutoMigrate(&product.VideoCamera{})
+	db.AutoMigrate(&product.Product{})
 }
 
 // メーカーの取得
@@ -112,7 +113,7 @@ func getCategory(listurl string) string {
 
 // プロダクトの必要情報を取得
 func getEachProductInfos(url, category string) {
-	pinfo := new(product.PInfo)
+	pinfo := new(product.Product)
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		log.Fatal("failed to get product info doc")
@@ -123,7 +124,7 @@ func getEachProductInfos(url, category string) {
 	pinfo.LowestNewPrice = getLowestNewPrice(doc)
 	pinfo.SecondHandMinPrice, pinfo.SecondHandMaxPrice = getSecondHandPrices(doc)
 	pinfo.Category = category
-	fmt.Println(pinfo)
+	db.Create(pinfo)
 }
 
 // 商品詳細へのリンクを取得

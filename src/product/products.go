@@ -1,6 +1,6 @@
 package product
 
-type PInfo struct {
+type Product struct {
 	Category           string `json:"category"`              //カテゴリー
 	Maker              string `json:"maker"`                 //maker
 	Name               string `json:"name"`                  //製品名
