@@ -127,6 +127,23 @@ func getEachProductInfos(url, category string) {
 	db.Create(pinfo)
 }
 
+//次のページが有るかどうかの検索
+func isNextPage(url string) (string, bool) {
+	doc, err := goquery.NewDocument(url)
+	if err != nil {
+		return "", false
+	}
+	if _, is := doc.Find(".pagenation .pageNextOn").Attr("src"); is {
+		urls := make([]string, 0)
+		doc.Find(".pagenation .pageicon a").Each(func(_ int, s *goquery.Selection) {
+			url, _ := s.Attr("href")
+			urls = append(urls, url)
+		})
+		return D.KakakuURL + urls[len(urls)-1], true
+	}
+	return "", false
+}
+
 // 商品詳細へのリンクを取得
 func getProductDetailURL(url string) []string {
 	var urls []string
@@ -150,6 +167,11 @@ func setProductInfos(url string) {
 	for i := 0; i < len(detailURLs); i++ {
 		fmt.Println(detailURLs[i])
 		getEachProductInfos(detailURLs[i], category)
+	}
+
+	if next, is := isNextPage(url); is {
+		fmt.Println("next page")
+		setProductInfos(next)
 	}
 }
 
