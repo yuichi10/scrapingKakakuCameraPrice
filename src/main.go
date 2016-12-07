@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"product"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -30,9 +31,15 @@ func openDB() {
 	}
 }
 
+func initDB() {
+	openDB()
+	db.DB()
+	db.AutoMigrate(&product.DslrCamera{})
+}
+
 func main() {
 	EnvLoad()
-	openDB()
-	fmt.Print(os.Getenv("DB_USER"))
+	initDB()
+	defer db.Close()
 	fmt.Println("hello go")
 }
