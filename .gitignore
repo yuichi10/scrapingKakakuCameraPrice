@@ -31,3 +31,7 @@ vendor/
 
 # env
 .env
+
+# build
+main
+src/main
