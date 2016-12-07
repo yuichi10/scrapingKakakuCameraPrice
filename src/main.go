@@ -59,6 +59,11 @@ func getMaker(doc *goquery.Document) string {
 	return sjisToUtf8(doc.Find(".makerLabel").Text())
 }
 
+// プロダクト名の取得
+func getProductName(doc *goquery.Document) string {
+	return sjisToUtf8(doc.Find("h2").Text())
+}
+
 // プロダクトの必要情報を取得
 func getEachProductInfos(url string) {
 	pinfo := new(product.PInfo)
@@ -67,7 +72,7 @@ func getEachProductInfos(url string) {
 		log.Fatal("failed to get product info doc")
 	}
 	pinfo.Maker = getMaker(doc)
-	fmt.Println(pinfo.Maker)
+	pinfo.Name = getProductName(doc)
 }
 
 // 商品詳細へのリンクを取得
