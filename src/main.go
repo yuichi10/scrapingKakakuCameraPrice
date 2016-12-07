@@ -94,8 +94,24 @@ func getSecondHandPrices(doc *goquery.Document) (min, max string) {
 	return
 }
 
+// 商品カテゴリーを取得
+func getCategory(listurl string) string {
+	urlParams := strings.Split(listurl, "/")
+	category = urlParams[4]
+	switch category {
+	case D.KakakuURLBody:
+		return "一眼カメラ"
+	case D.KakakuURLLens:
+		return "レンズ"
+	case D.KakakuURLVideo:
+		return "ビデオカメラ"
+	default:
+		return "その他"
+	}
+}
+
 // プロダクトの必要情報を取得
-func getEachProductInfos(url string) {
+func getEachProductInfos(url, category string) {
 	pinfo := new(product.PInfo)
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
@@ -106,6 +122,7 @@ func getEachProductInfos(url string) {
 	pinfo.ReleaseDate = getReleaseDate(doc)
 	pinfo.LowestNewPrice = getLowestNewPrice(doc)
 	pinfo.SecondHandMinPrice, pinfo.SecondHandMaxPrice = getSecondHandPrices(doc)
+	pinfo.Category = category
 	fmt.Println(pinfo)
 }
 
@@ -128,9 +145,10 @@ func getProductDetailURL(url string) []string {
 // プロダクトの情報を書き込む
 func setProductInfos(url string) {
 	detailURLs := getProductDetailURL(url)
+	category := getCategory(url)
 	for i := 0; i < len(detailURLs); i++ {
 		fmt.Println(detailURLs[i])
-		getEachProductInfos(detailURLs[i])
+		getEachProductInfos(detailURLs[i], category)
 	}
 }
 
@@ -177,31 +195,10 @@ func getFlagURL() string {
 	return url
 }
 
-// 商品のカテゴリーを取得
-func setCategoryFromURL(url string) {
-	urlParams := strings.Split(url, "/")
-	category = urlParams[4]
-}
-
-// 商品カテゴリーを取得
-func getCategory() string {
-	switch category {
-	case KakakuURLBody:
-		return "一眼カメラ"
-	case KakakuURLLens:
-		return "レンズ"
-	case KakakuURLVideo:
-		return "ビデオカメラ"
-	default:
-		return "その他"
-	}
-}
-
 func main() {
 	EnvLoad()
 	initDB()
 	defer db.Close()
 	url := getFlagURL()
-	setCategoryFromURL(url)
 	setProductInfos(url)
 }
