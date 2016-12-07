@@ -39,6 +39,8 @@ func initDB() {
 	openDB()
 	db.DB()
 	db.AutoMigrate(&product.DslrCamera{})
+	db.AutoMigrate(&product.Lens{})
+	db.AutoMigrate(&product.VideoCamera{})
 }
 
 // 商品詳細へのリンクを取得
@@ -65,6 +67,7 @@ func setProductInfos(url string) {
 	}
 }
 
+// コマンドライン引数からURLを取得
 func getFlagURL() string {
 	flag.Parse()
 	url := flag.Arg(0)
