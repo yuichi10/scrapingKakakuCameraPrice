@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"product"
-	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -73,13 +72,16 @@ func getReleaseDate(doc *goquery.Document) string {
 }
 
 // 新品の最低料金の取得
-func getLowestNewPrice(doc *goquery.Document) int {
+func getLowestNewPrice(doc *goquery.Document) string {
 	price := strings.Replace(sjisToUtf8(doc.Find("#minPrice span").Text()), "ﾂ･", "", -1)
-	p, err := strconv.Atoi(price)
-	if err != nil {
-		return -1
-	}
-	return p
+	return price
+}
+
+func getSecondHandPrices(doc *goquery.Document) (min, max string) {
+	//usedpriceBox
+	min = "-1"
+	max = "-1"
+	return
 }
 
 // プロダクトの必要情報を取得
@@ -93,6 +95,7 @@ func getEachProductInfos(url string) {
 	pinfo.Name = getProductName(doc)
 	pinfo.ReleaseDate = getReleaseDate(doc)
 	pinfo.LowestNewPrice = getLowestNewPrice(doc)
+	fmt.Println(pinfo.LowestNewPrice)
 }
 
 // 商品詳細へのリンクを取得
