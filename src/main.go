@@ -6,6 +6,7 @@ import (
 	"os"
 	"product"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/joho/godotenv"
@@ -37,9 +38,33 @@ func initDB() {
 	db.AutoMigrate(&product.DslrCamera{})
 }
 
+// 商品詳細へのリンクを取得
+func getProductDetailURL(url string) []string {
+	var urls []string
+	urls = make([]string, 0)
+	doc, err := goquery.NewDocument(url)
+	if err != nil {
+		fmt.Printf("getLinks Error: %v \n", err)
+		return nil
+	}
+	doc.Find(".ckitemLink .ckitanker").Each(func(_ int, s *goquery.Selection) {
+		url, _ := s.Attr("href")
+		urls = append(urls, string(url))
+	})
+	return urls
+}
+
+// プロダクトの情報を書き込む
+func setProductInfos(url string) {
+	detailURLs := getProductDetailURL(url)
+	for i := 0; i < len(detailURLs); i++ {
+		fmt.Println(detailURLs[i])
+	}
+}
+
 func main() {
 	EnvLoad()
 	initDB()
 	defer db.Close()
-	fmt.Println("hello go")
+	setProductInfos("http://kakaku.com/camera/digital-slr-camera/itemlist.aspx")
 }
