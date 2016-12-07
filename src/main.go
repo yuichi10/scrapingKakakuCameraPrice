@@ -77,10 +77,20 @@ func getLowestNewPrice(doc *goquery.Document) string {
 	return price
 }
 
+// 中古価格取得
 func getSecondHandPrices(doc *goquery.Document) (min, max string) {
-	//usedpriceBox
-	min = "-1"
-	max = "-1"
+	min = ""
+	max = ""
+	if doc.Find("#usedpriceBox #minUesdPrice a").Text() == "" {
+		return
+	}
+	price := sjisToUtf8(doc.Find("#usedpriceBox #minUesdPrice a").Text())
+	price = strings.Replace(price, "ﾂ･", "", -1)
+	prices := strings.Split(price, "～")
+	if len(prices) > 0 {
+		min = prices[0]
+		max = prices[len(prices)-1]
+	}
 	return
 }
 
@@ -95,7 +105,8 @@ func getEachProductInfos(url string) {
 	pinfo.Name = getProductName(doc)
 	pinfo.ReleaseDate = getReleaseDate(doc)
 	pinfo.LowestNewPrice = getLowestNewPrice(doc)
-	fmt.Println(pinfo.LowestNewPrice)
+	pinfo.SecondHandMinPrice, pinfo.SecondHandMaxPrice = getSecondHandPrices(doc)
+	fmt.Println(pinfo)
 }
 
 // 商品詳細へのリンクを取得
@@ -170,6 +181,20 @@ func getFlagURL() string {
 func setCategoryFromURL(url string) {
 	urlParams := strings.Split(url, "/")
 	category = urlParams[4]
+}
+
+// 商品カテゴリーを取得
+func getCategory() string {
+	switch category {
+	case KakakuURLBody:
+		return "一眼カメラ"
+	case KakakuURLLens:
+		return "レンズ"
+	case KakakuURLVideo:
+		return "ビデオカメラ"
+	default:
+		return "その他"
+	}
 }
 
 func main() {
