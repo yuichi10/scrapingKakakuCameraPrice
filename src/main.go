@@ -1,10 +1,13 @@
 package main
 
 import (
+	"D"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"product"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/jinzhu/gorm"
@@ -62,9 +65,20 @@ func setProductInfos(url string) {
 	}
 }
 
+func getFlagURL() string {
+	flag.Parse()
+	url := flag.Arg(0)
+	urlParams := strings.Split(url, "/")
+	if urlParams[2] != D.KakakuDomain || urlParams[5] != D.KakakuItemList {
+		log.Fatal("url is not kakaku item list")
+	}
+	return url
+}
+
 func main() {
 	EnvLoad()
 	initDB()
 	defer db.Close()
-	setProductInfos("http://kakaku.com/camera/digital-slr-camera/itemlist.aspx")
+	url := getFlagURL()
+	setProductInfos(url)
 }
