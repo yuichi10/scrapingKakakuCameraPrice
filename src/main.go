@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"product"
+	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -71,6 +72,16 @@ func getReleaseDate(doc *goquery.Document) string {
 	return values[len(values)-1]
 }
 
+// 新品の最低料金の取得
+func getLowestNewPrice(doc *goquery.Document) int {
+	price := strings.Replace(sjisToUtf8(doc.Find("#minPrice span").Text()), "ﾂ･", "", -1)
+	p, err := strconv.Atoi(price)
+	if err != nil {
+		return -1
+	}
+	return p
+}
+
 // プロダクトの必要情報を取得
 func getEachProductInfos(url string) {
 	pinfo := new(product.PInfo)
@@ -81,6 +92,7 @@ func getEachProductInfos(url string) {
 	pinfo.Maker = getMaker(doc)
 	pinfo.Name = getProductName(doc)
 	pinfo.ReleaseDate = getReleaseDate(doc)
+	pinfo.LowestNewPrice = getLowestNewPrice(doc)
 }
 
 // 商品詳細へのリンクを取得
