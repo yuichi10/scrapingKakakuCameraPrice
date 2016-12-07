@@ -22,6 +22,7 @@ import (
 var db *gorm.DB
 var category string
 
+// load .env file
 func EnvLoad() {
 	err := godotenv.Load()
 	if err != nil {
@@ -30,6 +31,7 @@ func EnvLoad() {
 	}
 }
 
+// open db connection
 func openDB() {
 	var err error
 	sql := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8&parseTime=True", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
@@ -40,6 +42,7 @@ func openDB() {
 	}
 }
 
+// init db setting
 func initDB() {
 	openDB()
 	db.DB()
