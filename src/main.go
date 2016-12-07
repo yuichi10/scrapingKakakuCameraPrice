@@ -16,6 +16,7 @@ import (
 )
 
 var db *gorm.DB
+var category string
 
 func EnvLoad() {
 	err := godotenv.Load()
@@ -78,10 +79,17 @@ func getFlagURL() string {
 	return url
 }
 
+// 商品のカテゴリーを取得
+func setCategoryFromURL(url string) {
+	urlParams := strings.Split(url, "/")
+	category = urlParams[4]
+}
+
 func main() {
 	EnvLoad()
 	initDB()
 	defer db.Close()
 	url := getFlagURL()
+	setCategoryFromURL(url)
 	setProductInfos(url)
 }
